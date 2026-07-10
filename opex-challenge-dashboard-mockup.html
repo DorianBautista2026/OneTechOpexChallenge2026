@@ -1,0 +1,1780 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OPEX Challenge 2026 - Mockup Dashboard</title>
+  <style>
+    :root {
+      --black: #10141c;
+      --black-2: #1b202b;
+      --ink: #151925;
+      --muted: #667085;
+      --line: #dde2ea;
+      --bg: #f5f7fb;
+      --white: #ffffff;
+      --yellow: #ffc400;
+      --green: #19943a;
+      --red: #e30613;
+      --orange: #ff6b00;
+      --gray: #808792;
+      --soft-yellow: #fff2b8;
+      --soft-green: #dff4e3;
+      --soft-red: #ffe1e1;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #0b0f16;
+      color: var(--ink);
+      font-family: "Inter", "Segoe UI", Arial, sans-serif;
+    }
+
+    .dashboard {
+      width: min(1720px, 100%);
+      min-height: 930px;
+      margin: 0 auto;
+      background: var(--bg);
+      overflow: visible;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      height: 74px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      color: var(--white);
+      background:
+        linear-gradient(105deg, rgba(255, 196, 0, .10), transparent 34%),
+        linear-gradient(180deg, #181d27, #0f141d);
+      border-bottom: 3px solid var(--yellow);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding-right: 24px;
+      border-right: 1px solid rgba(255,255,255,.42);
+      min-width: 260px;
+    }
+
+    .brand-mark {
+      color: var(--yellow);
+      font-size: 33px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .brand-word {
+      font-size: 31px;
+      font-weight: 700;
+      letter-spacing: 7px;
+      color: #f6f7fb;
+    }
+
+    .brand-word span { color: var(--yellow); }
+
+    .title-block {
+      flex: 1;
+      min-width: 310px;
+    }
+
+    .title-block h1 {
+      margin: 0;
+      color: #f8fafc;
+      font-size: 28px;
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .title-block p {
+      margin: 7px 0 0;
+      color: #c6cad4;
+      font-size: 15px;
+    }
+
+    .filters {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .filter {
+      min-width: 150px;
+      height: 42px;
+      border: 1px solid rgba(255,255,255,.45);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      color: #f5f7fb;
+      background: rgba(255,255,255,.04);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .filter svg { width: 18px; height: 18px; stroke: #e9edf5; }
+
+    .filter label {
+      color: #cfd5df;
+      margin-right: 6px;
+      white-space: nowrap;
+    }
+
+    .filter select {
+      min-width: 0;
+      flex: 1;
+      border: 0;
+      outline: 0;
+      color: #f8fafc;
+      background: transparent;
+      font: inherit;
+      font-weight: 750;
+      appearance: none;
+      cursor: pointer;
+    }
+
+    .filter select option {
+      color: #111827;
+      background: #ffffff;
+    }
+
+    .content {
+      padding: 18px 24px 26px;
+    }
+
+    .dashboard-shell {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      align-items: start;
+      min-height: calc(100vh - 74px);
+    }
+
+    .filter-rail {
+      position: sticky;
+      top: 77px;
+      z-index: 30;
+      min-height: calc(100vh - 74px);
+      max-height: calc(100vh - 77px);
+      overflow-y: auto;
+      padding: 18px 16px;
+      background: linear-gradient(180deg, #181d27, #10141c);
+      border-right: 3px solid var(--yellow);
+      color: #f8fafc;
+    }
+
+    .filter-rail h2 {
+      margin: 0 0 14px;
+      font-size: 18px;
+      letter-spacing: 0;
+      color: #ffffff;
+    }
+
+    .rail-filters {
+      display: grid;
+      gap: 12px;
+    }
+
+    .rail-filter {
+      display: grid;
+      gap: 6px;
+    }
+
+    .rail-filter label {
+      position: relative;
+      display: block;
+      padding: 8px 28px 8px 10px;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 7px;
+      background: rgba(255,255,255,.06);
+      font-size: 12px;
+      font-weight: 800;
+      color: #cfd5df;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .rail-filter label::after {
+      content: "⌄";
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--yellow);
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    .rail-filter.open label::after {
+      content: "⌃";
+    }
+
+    .rail-filter select {
+      width: 100%;
+      min-height: 38px;
+      border: 1px solid rgba(255,255,255,.32);
+      border-radius: 7px;
+      padding: 0 10px;
+      color: #f8fafc;
+      background: #202633;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 650;
+      outline: none;
+    }
+
+    .rail-filter:not(.open) select {
+      display: none;
+    }
+
+    .rail-filter select[multiple] {
+      min-height: 88px;
+      padding: 6px 8px;
+    }
+
+    .rail-filter select option {
+      color: #111827;
+      background: #ffffff;
+    }
+
+    .rail-reset {
+      width: 100%;
+      height: 38px;
+      margin-top: 4px;
+      border: 1px solid rgba(255,196,0,.75);
+      border-radius: 7px;
+      color: #111827;
+      background: var(--yellow);
+      font: inherit;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(190px, 1fr));
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .card, .panel {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 2px 9px rgba(16, 24, 40, .08);
+    }
+
+    .kpi {
+      height: 112px;
+      padding: 15px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .kpi.alert { border-color: rgba(227,6,19,.68); background: linear-gradient(90deg, #fff, #fff8f8); }
+
+    .icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+    }
+
+    .icon svg { width: 35px; height: 35px; stroke-width: 2.4; }
+    .icon.yellow { background: var(--soft-yellow); color: #1b1e27; }
+    .icon.green { background: var(--soft-green); color: #0d5d26; }
+    .icon.red { background: var(--soft-red); color: var(--red); }
+    .icon.gray { background: #eef0f4; color: #353946; }
+
+    .kpi h2 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      color: #242938;
+      letter-spacing: 0;
+      line-height: 1.08;
+    }
+
+    .kpi h2 span {
+      display: block;
+      margin-top: 2px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #667085;
+    }
+
+    .kpi .value {
+      font-size: clamp(21px, 1.65vw, 27px);
+      font-weight: 850;
+      line-height: 1;
+      color: #101521;
+      white-space: nowrap;
+      letter-spacing: 0;
+    }
+
+    .kpi .value.green { color: var(--green); }
+    .kpi .value.red { color: var(--red); }
+
+    .kpi.alert .value {
+      font-size: clamp(18px, 1.25vw, 23px);
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 18px;
+      margin-bottom: 18px;
+      align-items: stretch;
+    }
+
+    .main-stack,
+    .category-stack {
+      display: contents;
+    }
+
+    .monthly-panel {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .ytd-executive-panel {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    .priority-ytd-panel {
+      grid-column: 1 / -1;
+      grid-row: 3;
+    }
+
+    .chart-insights.executive-only {
+      grid-column: 1;
+      grid-row: 4;
+    }
+
+    .category-ytd-panel {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .director-performance {
+      grid-column: 2;
+      grid-row: 2;
+    }
+
+    .category-stack > .panel:last-child {
+      grid-column: 2;
+      grid-row: 4;
+    }
+
+    .panel {
+      padding: 16px;
+      min-height: 330px;
+    }
+
+    .panel-title {
+      margin: 0 0 12px;
+      font-size: 23px;
+      color: #111827;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .legend {
+      display: flex;
+      gap: 28px;
+      margin: 4px 0 10px;
+      color: #374151;
+      font-size: 14px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+
+    .swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+
+    .swatch.yellow { background: var(--yellow); }
+    .swatch.dark { background: #2b303d; }
+    .swatch.line {
+      height: 4px;
+      width: 30px;
+      background: #111827;
+      border-radius: 99px;
+      position: relative;
+    }
+
+    .swatch.line:after {
+      content: "";
+      position: absolute;
+      right: -3px;
+      top: -4px;
+      width: 12px;
+      height: 12px;
+      background: #111827;
+      border-radius: 50%;
+    }
+
+    .chart-wrap {
+      width: 100%;
+      height: 258px;
+      position: relative;
+    }
+
+    .chart-wrap svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .chart-insights {
+      margin-top: 0;
+      padding-top: 0;
+      border-top: 0;
+      display: grid;
+      grid-template-columns: 1fr 1px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .chart-insights.executive-only {
+      grid-template-columns: 1fr;
+    }
+
+    .chart-insights.executive-only .executive-insight {
+      grid-column: 1;
+      height: 100%;
+    }
+
+    .chart-insights.executive-only .mini-grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .ytd-executive-panel .mini-grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .executive-bars {
+      margin-top: 15px;
+      display: grid;
+      gap: 11px;
+    }
+
+    .director-performance {
+      min-height: 330px;
+      overflow: hidden;
+    }
+
+    .director-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .director-table {
+      width: 100%;
+      min-width: 520px;
+      border-collapse: separate;
+      border-spacing: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+      font-size: 12px;
+    }
+
+    .director-table th {
+      height: 37px;
+      padding: 6px 8px;
+      background: linear-gradient(180deg, #2c3241, #202533);
+      color: #fff;
+      font-size: 11px;
+      text-align: center;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .director-table td {
+      height: 34px;
+      padding: 5px 8px;
+      border-top: 1px solid var(--line);
+      color: #0f172a;
+      vertical-align: middle;
+    }
+
+    .director-table .director-name {
+      max-width: 170px;
+      color: #102033;
+      font-weight: 400;
+      line-height: 1.15;
+      overflow-wrap: anywhere;
+    }
+
+    .director-table .money,
+    .director-table .num {
+      text-align: right;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .executive-insight { grid-column: 1; grid-row: 1; }
+    .insight-divider { grid-column: 2; grid-row: 1; }
+    .health-insight { grid-column: 3; grid-row: 1; }
+
+    .insight-divider {
+      width: 1px;
+      height: 100%;
+      min-height: 220px;
+      background: var(--line);
+    }
+
+    .health-insight { grid-column: 1; }
+    .executive-insight { grid-column: 3; }
+
+    .insight-block h2 {
+      margin: 0 0 12px;
+      font-size: 20px;
+      color: #111827;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .chart-insights .portfolio {
+      grid-template-columns: 1.35fr .65fr;
+      gap: 12px;
+    }
+
+    .chart-insights .status-row {
+      height: 42px;
+      grid-template-columns: 34px 1fr 78px 36px;
+      padding: 0 8px;
+      gap: 8px;
+    }
+
+    .chart-insights .status-dot {
+      width: 26px;
+      height: 26px;
+      font-size: 15px;
+    }
+
+    .chart-insights .status-number {
+      font-size: 19px;
+    }
+
+    .chart-insights .donut {
+      width: 145px;
+      height: 145px;
+    }
+
+    .chart-insights .donut-inner {
+      width: 92px;
+      height: 92px;
+    }
+
+    .chart-insights .donut-inner strong {
+      font-size: 24px;
+    }
+
+    .chart-insights .donut-inner span {
+      font-size: 16px;
+    }
+
+    .portfolio {
+      display: grid;
+      grid-template-columns: 1.25fr .9fr;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .status-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .status-row {
+      height: 50px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: grid;
+      grid-template-columns: 40px 1fr 145px 48px;
+      align-items: center;
+      padding: 0 12px;
+      gap: 10px;
+      background: #fff;
+    }
+
+    .status-dot {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: white;
+      font-weight: 850;
+      font-size: 17px;
+    }
+
+    .status-row b {
+      font-size: 14px;
+      color: #2b303d;
+    }
+
+    .bar-bg {
+      height: 8px;
+      border-radius: 999px;
+      background: #eceff4;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: inherit;
+    }
+
+    .status-number {
+      text-align: right;
+      font-size: 24px;
+      font-weight: 850;
+    }
+
+    .donut {
+      width: 205px;
+      height: 205px;
+      border-radius: 50%;
+      margin: 0 auto;
+      background: conic-gradient(var(--green) 0 88.3%, #e7e9ee 88.3% 100%);
+      display: grid;
+      place-items: center;
+    }
+
+    .donut-inner {
+      width: 132px;
+      height: 132px;
+      border-radius: 50%;
+      background: white;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      box-shadow: inset 0 0 0 1px #edf0f5;
+    }
+
+    .donut-inner strong {
+      display: block;
+      color: var(--green);
+      font-size: 33px;
+      line-height: 1;
+    }
+
+    .donut-inner span {
+      display: block;
+      margin-top: 8px;
+      font-size: 20px;
+      font-weight: 700;
+      color: #2b303d;
+    }
+
+    .lower-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .side-stack {
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+
+    .table-panel {
+      padding: 14px 16px 18px;
+    }
+
+    .priority-ytd-panel {
+      min-height: 330px;
+      overflow-x: auto;
+      overflow-y: visible;
+    }
+
+    .priority-ytd-panel table {
+      font-size: 12px;
+    }
+
+    .priority-ytd-panel th,
+    .priority-ytd-panel td {
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+
+    .table-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 10px;
+    }
+
+    .focus-pill {
+      border: 1px solid var(--yellow);
+      border-radius: 7px;
+      color: #1f2937;
+      min-height: 38px;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 750;
+      background: #fffdf3;
+      text-align: center;
+    }
+
+    .focus-pill svg { width: 22px; height: 22px; stroke: var(--orange); }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      font-size: 14px;
+    }
+
+    th {
+      height: 38px;
+      background: linear-gradient(180deg, #303441, #222633);
+      color: #f8fafc;
+      text-align: center;
+      padding: 0 12px;
+      font-weight: 750;
+      border-right: 1px solid rgba(255,255,255,.18);
+      white-space: nowrap;
+    }
+
+    td {
+      height: 38px;
+      padding: 6px 12px;
+      border-top: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      color: #374151;
+      background: #fff;
+      vertical-align: middle;
+    }
+
+    tr:nth-child(even) td { background: #fbfcfe; }
+    th:last-child, td:last-child { border-right: 0; }
+    .rank { width: 46px; text-align: center; }
+    .initiative-detail {
+      max-width: 280px;
+      min-width: 190px;
+      font-size: 12px;
+      line-height: 1.25;
+      color: #667085;
+      white-space: normal;
+    }
+    .gap { color: var(--red); font-weight: 850; text-align: right; }
+    .center { text-align: center; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 76px;
+      height: 24px;
+      border-radius: 5px;
+      padding: 0 9px;
+      font-size: 13px;
+      font-weight: 700;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .tag.low { color: #12692a; background: #e8f7ec; border-color: #a6dfb4; }
+    .tag.medium { color: #8a5c00; background: #fff5cc; border-color: #ffd84d; }
+    .tag.high { color: #fff; background: var(--orange); }
+    .tag.very { color: #fff; background: var(--red); }
+
+    .side-panel {
+      padding: 16px;
+    }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .mini-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 13px;
+      background: #fff;
+      min-height: 86px;
+    }
+
+    .mini-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    .mini-card strong {
+      display: block;
+      font-size: 25px;
+      line-height: 1;
+      color: #111827;
+    }
+
+    .mini-card.gap-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .gap-corner-arrow {
+      position: absolute;
+      right: 12px;
+      bottom: 10px;
+      width: 0;
+      height: 0;
+    }
+
+    .gap-corner-arrow.up {
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-bottom: 16px solid var(--green);
+    }
+
+    .gap-corner-arrow.down {
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 16px solid var(--red);
+    }
+
+    .tower-bars {
+      margin-top: 15px;
+      display: grid;
+      gap: 11px;
+    }
+
+    .tower-row {
+      display: grid;
+      grid-template-columns: 130px 1fr 54px;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: #374151;
+      font-weight: 650;
+    }
+
+    .tower-row .bar-fill { background: var(--yellow); }
+
+    .tower-row b {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .category-table {
+      font-size: 12px;
+    }
+
+    .category-section {
+      padding: 0 0 14px;
+    }
+
+    .category-section + .category-section {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 2px solid var(--line);
+    }
+
+    .category-heading {
+      margin: 0 0 12px;
+      font-size: 23px;
+      color: #111827;
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .category-heading span {
+      display: block;
+      margin-top: 3px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #667085;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+
+    .category-table th,
+    .category-table td {
+      height: 34px;
+      padding: 5px 8px;
+    }
+
+    .category-table .num {
+      text-align: right;
+      font-weight: 750;
+    }
+
+    .category-table .money {
+      text-align: right;
+      font-weight: 850;
+      color: #111827;
+      white-space: nowrap;
+    }
+
+    .status-light {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .status-light::before {
+      content: "";
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 0 3px rgba(17,24,39,.06);
+    }
+
+    .status-light.red::before { background: var(--red); }
+    .status-light.yellow::before { background: var(--yellow); }
+    .status-light.green::before { background: var(--green); }
+
+    @media (max-width: 1400px) {
+      .dashboard { min-height: auto; }
+      .topbar { height: auto; padding: 16px; flex-wrap: wrap; }
+      .brand { min-width: 320px; }
+      .title-block { flex: 1 1 420px; }
+      .filters { width: 100%; flex-wrap: wrap; }
+      .filter { flex: 1; min-width: 170px; }
+      .dashboard-shell { grid-template-columns: 250px 1fr; }
+      .content { padding: 18px 16px 24px; }
+      .kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+      .kpi { padding: 12px 10px; gap: 9px; }
+      .icon { width: 44px; height: 44px; }
+      .icon svg { width: 27px; height: 27px; }
+      .kpi h2 { font-size: 14px; }
+      .kpi h2 span { font-size: 11px; }
+      .kpi .value { font-size: clamp(18px, 1.45vw, 22px); }
+      .kpi.alert .value { font-size: clamp(17px, 1.2vw, 21px); }
+      .main-grid { grid-template-columns: 1.15fr .85fr; }
+      .status-row { grid-template-columns: 36px 1fr 95px 42px; padding: 0 10px; }
+      .status-row b { font-size: 13px; }
+      .status-number { font-size: 22px; }
+      .donut { width: 175px; height: 175px; }
+      .donut-inner { width: 112px; height: 112px; }
+      .donut-inner strong { font-size: 29px; }
+      .lower-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 1100px) {
+      .kpis, .main-grid, .lower-grid { grid-template-columns: 1fr; }
+      .monthly-panel,
+      .ytd-executive-panel,
+      .chart-insights.executive-only,
+      .category-ytd-panel,
+      .director-performance,
+      .category-stack > .panel:last-child {
+        grid-column: 1;
+        grid-row: auto;
+      }
+      .chart-insights { grid-template-columns: 1fr; }
+      .insight-divider { width: 100%; height: 1px; min-height: 1px; }
+      .dashboard-shell { grid-template-columns: 1fr; }
+      .filter-rail { position: static; min-height: auto; max-height: none; border-right: 0; border-bottom: 3px solid var(--yellow); }
+      .rail-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .portfolio { grid-template-columns: 1fr; }
+      .status-row { grid-template-columns: 36px 1fr 90px 42px; }
+      .table-header { align-items: flex-start; flex-direction: column; }
+      table { font-size: 12px; }
+      th, td { padding: 6px 8px; }
+    }
+
+    @media (max-width: 720px) {
+      .rail-filters { grid-template-columns: 1fr; }
+    }
+
+    .chart-insights:not(.executive-only) > .executive-insight { grid-column: 1; grid-row: 1; }
+    .chart-insights:not(.executive-only) > .insight-divider { grid-column: 2; grid-row: 1; }
+    .chart-insights:not(.executive-only) > .health-insight { grid-column: 3; grid-row: 1; }
+  </style>
+</head>
+<body>
+  <main class="dashboard">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">#</div>
+        <div class="brand-word">brew<span>tech</span></div>
+      </div>
+      <div class="title-block">
+        <h1>OPEX Challenge 2026</h1>
+        <p>Monthly performance, gaps, and recovery actions</p>
+      </div>
+      <div class="filters" aria-label="Filters">
+        <div class="filter"><label for="filter-cut">Cutoff:</label><select id="filter-cut"><option value="Jun">Jun 2026</option></select><svg viewBox="0 0 24 24" fill="none"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+    </header>
+
+    <div class="dashboard-shell">
+      <aside class="filter-rail" aria-label="Filtros principales">
+        <h2>Filtros</h2>
+        <div class="rail-filters">
+          <div class="rail-filter"><label for="filter-package">Package</label><select id="filter-package" multiple></select></div>
+          <div class="rail-filter"><label for="filter-expense-type">Expense Type</label><select id="filter-expense-type" multiple></select></div>
+          <div class="rail-filter"><label for="filter-bu">BU</label><select id="filter-bu" multiple></select></div>
+          <div class="rail-filter"><label for="filter-country">Country</label><select id="filter-country" multiple></select></div>
+          <div class="rail-filter"><label for="filter-tower">Tower</label><select id="filter-tower" multiple></select></div>
+          <div class="rail-filter"><label for="filter-director">Director</label><select id="filter-director" multiple></select></div>
+          <div class="rail-filter"><label for="filter-owner">Owner</label><select id="filter-owner" multiple></select></div>
+          <div class="rail-filter"><label for="filter-category">Category</label><select id="filter-category" multiple></select></div>
+          <div class="rail-filter"><label for="filter-vendor">Vendor</label><select id="filter-vendor" multiple></select></div>
+          <button class="rail-reset" id="filter-reset" type="button">Clear filters</button>
+        </div>
+      </aside>
+
+      <section class="content">
+      <div class="kpis">
+        <article class="card kpi">
+          <div class="icon yellow"><svg viewBox="0 0 24 24" fill="none"><path d="M8 4h8l1 2h3v15H4V6h3l1-2Z" stroke="currentColor" stroke-linejoin="round"/><path d="M9 11h6M9 15h6M8 11h.1M8 15h.1" stroke="currentColor" stroke-linecap="round"/></svg></div>
+          <div><h2>Total Initiatives</h2><div class="value" id="kpi-count">116</div></div>
+        </article>
+        <article class="card kpi">
+          <div class="icon yellow"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor"/><path d="M12 6v12M15 9.5c-.4-1-1.5-1.7-3-1.7-1.7 0-3 .9-3 2.2 0 1.5 1.3 2 3 2.2 2 .3 3.2.8 3.2 2.2 0 1.3-1.3 2.2-3.2 2.2-1.6 0-2.8-.7-3.3-1.8" stroke="currentColor" stroke-linecap="round"/></svg></div>
+          <div><h2>Planned Savings<span>Year to date</span></h2><div class="value" id="kpi-h1-le">USD 3.40M</div></div>
+        </article>
+        <article class="card kpi">
+          <div class="icon gray"><svg viewBox="0 0 24 24" fill="none"><path d="M5 20V11h4v9H5Zm5 0V7h4v13h-4Zm5 0V4h4v16h-4Z" fill="currentColor"/></svg></div>
+          <div><h2>Captured Savings<span>Year to date</span></h2><div class="value" id="kpi-h1-act">USD 3.00M</div></div>
+        </article>
+        <article class="card kpi">
+          <div class="icon green"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor"/><circle cx="12" cy="12" r="3" stroke="currentColor"/><path d="m15 9 5-5M17 4h3v3" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><h2>Compliance<span>Year to date</span></h2><div class="value green" id="kpi-h1-cumpl">88.3%</div></div>
+        </article>
+        <article class="card kpi alert">
+          <div class="icon red"><svg viewBox="0 0 24 24" fill="none"><path d="m4 7 5 5 4-3 7 8" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 17h5v-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><h2>Gap<span>Year to date</span></h2><div class="value red" id="kpi-h1-gap">-USD 395.8K</div></div>
+        </article>
+      </div>
+
+      <div class="main-grid">
+        <div class="main-stack">
+        <section class="panel monthly-panel">
+          <h2 class="panel-title">Monthly Savings: LE vs Actual (USD K)</h2>
+          <div class="legend">
+            <span class="legend-item"><i class="swatch yellow"></i>LE (USD K)</span>
+            <span class="legend-item"><i class="swatch dark"></i>Actual (USD K)</span>
+            <span class="legend-item"><i class="swatch line"></i>Compliance (%)</span>
+          </div>
+          <div class="chart-wrap" id="monthly-chart">
+            <svg viewBox="0 0 900 260" role="img" aria-label="Monthly savings">
+              <defs>
+                <filter id="labelShadow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="#fff" flood-opacity=".9"/>
+                </filter>
+              </defs>
+              <g stroke="#e2e6ef" stroke-width="1">
+                <line x1="54" y1="210" x2="840" y2="210"/><line x1="54" y1="166" x2="840" y2="166"/><line x1="54" y1="122" x2="840" y2="122"/><line x1="54" y1="78" x2="840" y2="78"/><line x1="54" y1="34" x2="840" y2="34"/>
+              </g>
+              <g fill="#667085" font-size="12" text-anchor="end">
+                <text x="45" y="214">0</text><text x="45" y="170">250</text><text x="45" y="126">500</text><text x="45" y="82">750</text><text x="45" y="38">1,000</text>
+              </g>
+              <g fill="#667085" font-size="12" text-anchor="start">
+                <text x="852" y="214">0%</text><text x="852" y="170">50%</text><text x="852" y="126">100%</text><text x="852" y="82">150%</text><text x="852" y="38">200%</text>
+              </g>
+
+              <g>
+                <rect x="93" y="158" width="32" height="52" rx="3" fill="#ffc400"/><rect x="130" y="157" width="32" height="53" rx="3" fill="#2b303d"/>
+                <rect x="220" y="151" width="32" height="59" rx="3" fill="#ffc400"/><rect x="257" y="150" width="32" height="60" rx="3" fill="#2b303d"/>
+                <rect x="347" y="104" width="32" height="106" rx="3" fill="#ffc400"/><rect x="384" y="101" width="32" height="109" rx="3" fill="#2b303d"/>
+                <rect x="474" y="117" width="32" height="93" rx="3" fill="#ffc400"/><rect x="511" y="119" width="32" height="91" rx="3" fill="#2b303d"/>
+                <rect x="601" y="47" width="32" height="163" rx="3" fill="#ffc400"/><rect x="638" y="127" width="32" height="83" rx="3" fill="#2b303d"/>
+                <rect x="728" y="82" width="32" height="128" rx="3" fill="#ffc400"/><rect x="765" y="75" width="32" height="135" rx="3" fill="#2b303d"/>
+              </g>
+
+              <polyline points="146,98 273,99 400,98 527,105 654,151 781,92" fill="none" stroke="#111827" stroke-width="2.5"/>
+              <polyline points="527,105 654,151" fill="none" stroke="#e30613" stroke-width="2.5"/>
+              <g fill="#111827" stroke="#fff" stroke-width="3">
+                <circle cx="146" cy="98" r="6"/><circle cx="273" cy="99" r="6"/><circle cx="400" cy="98" r="6"/><circle cx="527" cy="105" r="6"/>
+              </g>
+              <g fill="#e30613" stroke="#fff" stroke-width="3">
+                <circle cx="654" cy="151" r="6"/><circle cx="781" cy="92" r="6"/>
+              </g>
+
+              <g fill="#111827" font-size="13" font-weight="700" text-anchor="middle" filter="url(#labelShadow)">
+                <text x="109" y="153">281</text><text x="146" y="152">288</text>
+                <text x="236" y="146">336</text><text x="273" y="145">341</text>
+                <text x="363" y="99">604</text><text x="400" y="96">619</text>
+                <text x="490" y="112">527</text><text x="527" y="114">516</text>
+                <text x="617" y="42">925</text><text x="654" y="122">473</text>
+                <text x="744" y="77">725</text><text x="781" y="70">765</text>
+              </g>
+              <g font-size="13" font-weight="800" text-anchor="middle">
+                <text x="146" y="85" fill="#111827">102.5%</text><text x="273" y="86" fill="#111827">101.6%</text><text x="400" y="85" fill="#111827">102.5%</text><text x="527" y="92" fill="#111827">97.9%</text><text x="654" y="139" fill="#e30613">51.1%</text><text x="781" y="79" fill="#111827">105.4%</text>
+              </g>
+              <g fill="#4b5563" font-size="13" text-anchor="middle">
+                <text x="127" y="238">Jan</text><text x="254" y="238">Feb</text><text x="381" y="238">Mar</text><text x="508" y="238">Apr</text><text x="635" y="238">May</text><text x="762" y="238">Jun</text>
+              </g>
+            </svg>
+          </div>
+        </section>
+
+        <section class="panel insight-block ytd-executive-panel">
+          <h2 id="executive-ytd-title">Executive Summary YTD</h2>
+          <div class="mini-grid" id="executive-ytd-grid"></div>
+          <div class="executive-bars" id="ytd-tower-bars"></div>
+        </section>
+
+        <section class="panel table-panel priority-ytd-panel">
+          <div class="table-header">
+            <h2 class="panel-title" id="priority-ytd-title">Priority Actions - YTD</h2>
+            <div class="focus-pill">
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M12 9v6M9 12h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              <span id="priority-ytd-focus">Year to date focus: review all initiatives with movement through June</span>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th class="rank">#</th><th>Initiative</th><th>Detail</th><th>Owner</th><th>Tower</th><th class="center">LE USD K</th><th class="center">AC USD K</th><th class="center">Gap USD K</th><th class="center">Risk</th><th>Immediate Action</th>
+              </tr>
+            </thead>
+            <tbody id="priority-ytd-body"></tbody>
+          </table>
+        </section>
+
+        <div class="chart-insights executive-only">
+            <section class="panel insight-block executive-insight">
+              <h2 id="executive-title">Executive Summary June</h2>
+              <div class="mini-grid" id="executive-grid">
+                <div class="mini-card"><span>2026 Gap</span><strong style="color:var(--red)">-USD 5.01M</strong></div>
+                <div class="mini-card"><span>Annual LE</span><strong>USD 9.80M</strong></div>
+                <div class="mini-card"><span>Largest monthly gap</span><strong>May</strong></div>
+                <div class="mini-card"><span>Director with most initiatives</span><strong>Ivan Ynoue</strong></div>
+              </div>
+              <div class="tower-bars" id="tower-bars">
+                <div class="tower-row"><span>Infra Services</span><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div><b>34</b></div>
+                <div class="tower-row"><span>Workplace</span><div class="bar-bg"><div class="bar-fill" style="width:47%"></div></div><b>16</b></div>
+                <div class="tower-row"><span>Infraestructura</span><div class="bar-bg"><div class="bar-fill" style="width:41%"></div></div><b>14</b></div>
+                <div class="tower-row"><span>Arquitectura</span><div class="bar-bg"><div class="bar-fill" style="width:41%"></div></div><b>14</b></div>
+                <div class="tower-row"><span>Arch. & Apps</span><div class="bar-bg"><div class="bar-fill" style="width:32%"></div></div><b>11</b></div>
+                <div class="tower-row"><span>AMS SAP</span><div class="bar-bg"><div class="bar-fill" style="width:29%"></div></div><b>10</b></div>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <div class="category-stack">
+        <section class="panel category-ytd-panel">
+          <div class="category-section">
+            <h2 class="category-heading">Summary by Category<span>YEAR TO DATE</span></h2>
+            <table class="category-table">
+              <thead>
+                <tr>
+                  <th>CATEGORY</th>
+                  <th class="center">LE</th>
+                  <th class="center">AC</th>
+                  <th class="center">GAP</th>
+                  <th class="center">COMPLIANCE</th>
+                  <th>STATUS</th>
+                </tr>
+              </thead>
+              <tbody id="category-summary-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel director-performance">
+          <h2 class="category-heading">Performance By Director<span>YEAR TO DATE</span></h2>
+          <div class="director-table-wrap">
+            <table class="director-table">
+              <thead>
+                <tr>
+                  <th>DIRECTOR</th>
+                  <th class="center">LE</th>
+                  <th class="center">AC</th>
+                  <th class="center">GAP</th>
+                  <th class="center">PERFORMANCE</th>
+                  <th>STATUS</th>
+                </tr>
+              </thead>
+              <tbody id="director-performance-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="category-section">
+            <h2 class="category-heading">Summary by Category<span id="category-cut-title">June</span></h2>
+            <table class="category-table">
+              <thead>
+                <tr>
+                  <th>CATEGORY</th>
+                  <th class="center">LE</th>
+                  <th class="center">AC</th>
+                  <th class="center">GAP</th>
+                  <th class="center">COMPLIANCE</th>
+                  <th>STATUS</th>
+                </tr>
+              </thead>
+              <tbody id="category-cut-month-body"></tbody>
+            </table>
+          </div>
+        </section>
+        </div>
+      </div>
+
+      <div class="lower-grid">
+        <section class="panel table-panel">
+          <div class="table-header">
+            <h2 class="panel-title" id="priority-title">Priority Actions — June</h2>
+            <div class="focus-pill">
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M12 9v6M9 12h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              <span id="priority-focus">Monthly focus: review all initiatives with movement in June</span>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th class="rank">#</th><th>Initiative</th><th>Detail</th><th>Owner</th><th>Tower</th><th class="center">LE USD K</th><th class="center">AC USD K</th><th class="center">Gap USD K</th><th class="center">Risk</th><th>Immediate Action</th>
+              </tr>
+            </thead>
+            <tbody id="priority-body"></tbody>
+          </table>
+        </section>
+
+      </div>
+      </section>
+    </div>
+  </main>
+  <script src="opex-dashboard-data.js"></script>
+  <script>
+    const monthLabels = {Jan: "Jan", Feb: "Feb", Mar: "Mar", Apr: "Apr", May: "May", Jun: "Jun", Jul: "Jul", Aug: "Aug", Sep: "Sep", Oct: "Oct", Nov: "Nov", Dec: "Dec"};
+    const fullMonthLabels = {Jan: "January", Feb: "February", Mar: "March", Apr: "April", May: "May", Jun: "June", Jul: "July", Aug: "August", Sep: "September", Oct: "October", Nov: "November", Dec: "December"};
+    const statusMeta = [
+      {key: "Completed", label: "Completed", icon: "✓", color: "var(--green)", numberColor: "var(--green)"},
+      {key: "In progress", label: "In progress", icon: "⌛", color: "var(--yellow)", numberColor: "#f2b400", iconColor: "#5f4500"},
+      {key: "Not started", label: "Not started", icon: "−", color: "var(--orange)", numberColor: "var(--orange)"},
+      {key: "Sin status", label: "No status", icon: "?", color: "var(--gray)", numberColor: "#6b7280"},
+      {key: "highRisk", label: "High / very high risk", icon: "!", color: "var(--red)", numberColor: "var(--red)"}
+    ];
+
+    function money(value) {
+      const sign = value < 0 ? "-" : "";
+      const abs = Math.abs(value);
+      if (abs >= 1000000) return `${sign}USD ${(abs / 1000000).toFixed(2)}M`;
+      return `${sign}USD ${(abs / 1000).toFixed(1)}K`;
+    }
+
+    function shortNumber(value) {
+      return value >= 1000000 ? `${(value / 1000000).toFixed(2)}M` : `${(value / 1000).toFixed(1)}K`;
+    }
+
+    function pct(value) {
+      return Number.isFinite(value) ? `${(value * 100).toFixed(1)}%` : "0.0%";
+    }
+
+    function complianceColor(value) {
+      if (value >= 1) return "var(--green)";
+      if (value >= .5) return "var(--yellow)";
+      return "var(--red)";
+    }
+
+    function html(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[char]));
+    }
+
+    function sum(values) {
+      return values.reduce((total, value) => total + (Number(value) || 0), 0);
+    }
+
+    function countBy(rows, key) {
+      return rows.reduce((acc, row) => {
+        const value = row[key] || `No ${key}`;
+        acc[value] = (acc[value] || 0) + 1;
+        return acc;
+      }, {});
+    }
+
+    function fillSelect(id, values, allLabel) {
+      const select = document.getElementById(id);
+      select.innerHTML = `<option value="__all" selected>${allLabel}</option>` + values
+        .filter(Boolean)
+        .sort((a, b) => a.localeCompare(b, "es"))
+        .map(value => `<option value="${html(value)}">${html(value)}</option>`)
+        .join("");
+    }
+
+    function selectedValues(id) {
+      const values = Array.from(document.getElementById(id).selectedOptions).map(option => option.value);
+      return values.length ? values : ["__all"];
+    }
+
+    function normalizeMultiSelect(id) {
+      const select = document.getElementById(id);
+      const selected = selectedValues(id);
+      if (selected.includes("__all") && selected.length > 1) {
+        Array.from(select.options).forEach(option => {
+          if (option.value === "__all") option.selected = false;
+        });
+      }
+      if (!Array.from(select.selectedOptions).length) {
+        select.querySelector('option[value="__all"]').selected = true;
+      }
+    }
+
+    function filteredRows() {
+      const filters = [
+        ["filter-package", "package"],
+        ["filter-expense-type", "expenseType"],
+        ["filter-bu", "bu"],
+        ["filter-country", "country"],
+        ["filter-tower", "tower"],
+        ["filter-director", "director"],
+        ["filter-owner", "owner"],
+        ["filter-category", "category"],
+        ["filter-vendor", "vendor"]
+      ];
+      return window.OPEX_DATA.rows.filter(row => filters.every(([id, key]) => {
+        const values = selectedValues(id);
+        return values.includes("__all") || values.includes(row[key]);
+      }));
+    }
+
+    function monthlyTotals(rows) {
+      return window.OPEX_DATA.months.map(month => {
+        const le = sum(rows.map(row => row.months[month]?.le));
+        const act = sum(rows.map(row => row.months[month]?.act));
+        return {month, le, act, gap: act - le, cumpl: le ? act / le : 0};
+      });
+    }
+
+    function renderChart(monthly, cutIndex) {
+      const items = monthly.slice(0, cutIndex + 1);
+      const maxMoney = Math.max(1000, ...items.flatMap(item => [item.le, item.act]).map(value => value / 1000));
+      const maxPct = Math.max(2, ...items.map(item => item.cumpl));
+      const chartWidth = 900;
+      const left = 54;
+      const right = 840;
+      const top = 34;
+      const bottom = 210;
+      const plotH = bottom - top;
+      const slot = (right - left) / items.length;
+      const barW = Math.max(16, Math.min(32, slot * .24));
+      const points = [];
+
+      const bars = items.map((item, index) => {
+        const center = left + slot * index + slot / 2;
+        const leH = (item.le / 1000) / maxMoney * plotH;
+        const actH = (item.act / 1000) / maxMoney * plotH;
+        const pointY = bottom - (Math.min(item.cumpl, maxPct) / maxPct) * plotH;
+        const pctLabelY = 16;
+        points.push(`${center},${pointY}`);
+        return `
+          <rect x="${center - barW - 3}" y="${bottom - leH}" width="${barW}" height="${leH}" rx="3" fill="#ffc400"></rect>
+          <rect x="${center + 3}" y="${bottom - actH}" width="${barW}" height="${actH}" rx="3" fill="#2b303d"></rect>
+          <text x="${center - barW / 2 - 3}" y="${bottom - leH - 6}" fill="#111827" font-size="12" font-weight="700" text-anchor="middle">${Math.round(item.le / 1000)}</text>
+          <text x="${center + barW / 2 + 3}" y="${bottom - actH - 6}" fill="#111827" font-size="12" font-weight="700" text-anchor="middle">${Math.round(item.act / 1000)}</text>
+          <text x="${center}" y="238" fill="#4b5563" font-size="13" text-anchor="middle">${monthLabels[item.month]}</text>
+          <line x1="${center}" y1="${pointY - 7}" x2="${center}" y2="${pctLabelY + 6}" stroke="${item.cumpl < 1 ? "#e30613" : "#111827"}" stroke-width="1.4" stroke-dasharray="3 4" opacity=".72"></line>
+          <text x="${center}" y="${pctLabelY}" fill="${item.cumpl < 1 ? "#e30613" : "#111827"}" font-size="12" font-weight="800" text-anchor="middle">${pct(item.cumpl)}</text>
+        `;
+      }).join("");
+
+      const circles = items.map((item, index) => {
+        const [cx, cy] = points[index].split(",");
+        return `<circle cx="${cx}" cy="${cy}" r="6" fill="${item.cumpl < 1 ? "#e30613" : "#111827"}" stroke="#fff" stroke-width="3"></circle>`;
+      }).join("");
+
+      document.getElementById("monthly-chart").innerHTML = `
+        <svg viewBox="0 0 ${chartWidth} 260" role="img" aria-label="Monthly savings">
+          <g stroke="#e2e6ef" stroke-width="1">
+            ${[0, .25, .5, .75, 1].map(t => `<line x1="${left}" y1="${bottom - plotH * t}" x2="${right}" y2="${bottom - plotH * t}"></line>`).join("")}
+          </g>
+          <g fill="#667085" font-size="12" text-anchor="end">
+            ${[0, .25, .5, .75, 1].map(t => `<text x="45" y="${bottom - plotH * t + 4}">${Math.round(maxMoney * t).toLocaleString("en-US")}</text>`).join("")}
+          </g>
+          <g fill="#667085" font-size="12" text-anchor="start">
+            ${[0, .25, .5, .75, 1].map(t => `<text x="852" y="${bottom - plotH * t + 4}">${Math.round(maxPct * 100 * t)}%</text>`).join("")}
+          </g>
+          <g>${bars}</g>
+          <polyline points="${points.join(" ")}" fill="none" stroke="#111827" stroke-width="2.5"></polyline>
+          <g>${circles}</g>
+        </svg>`;
+    }
+
+    function renderStatus(rows, h1Cumpl) {
+      const counts = countBy(rows, "status");
+      const highRisk = rows.filter(row => ["High", "Very High (Plug)"].includes(row.risk)).length;
+      const values = {...counts, highRisk};
+      const max = Math.max(1, ...statusMeta.map(item => values[item.key] || 0));
+      document.getElementById("status-list").innerHTML = statusMeta.map(item => {
+        const value = values[item.key] || 0;
+        return `<div class="status-row">
+          <span class="status-dot" style="background:${item.color};color:${item.iconColor || "#fff"}">${item.icon}</span>
+          <b>${item.label}</b>
+          <div class="bar-bg"><div class="bar-fill" style="width:${Math.round(value / max * 100)}%;background:${item.color}"></div></div>
+          <span class="status-number" style="color:${item.numberColor}">${value}</span>
+        </div>`;
+      }).join("");
+      document.getElementById("donut").style.background = `conic-gradient(var(--green) 0 ${Math.max(0, Math.min(100, h1Cumpl * 100))}%, #e7e9ee ${Math.max(0, Math.min(100, h1Cumpl * 100))}% 100%)`;
+      document.getElementById("donut-value").textContent = pct(h1Cumpl);
+    }
+
+    function riskTag(risk) {
+      if (risk === "Very High (Plug)") return '<span class="tag very">Very high</span>';
+      if (risk === "High") return '<span class="tag high">High</span>';
+      if (risk === "Medium") return '<span class="tag medium">Medium</span>';
+      return '<span class="tag low">Low</span>';
+    }
+
+    function renderPriorities(rows, cutMonth) {
+      document.getElementById("priority-title").textContent = `Priority Actions — ${fullMonthLabels[cutMonth]}`;
+      document.getElementById("priority-focus").textContent = `Monthly focus: review all initiatives with movement in ${fullMonthLabels[cutMonth]}`;
+      const priorities = rows
+        .map(row => {
+          const le = row.months[cutMonth]?.le || 0;
+          const act = row.months[cutMonth]?.act || 0;
+          return {...row, le, act, gap: act - le};
+        })
+        .filter(row => row.le !== 0 || row.act !== 0)
+        .sort((a, b) => a.gap - b.gap || b.le - a.le);
+      document.getElementById("priority-body").innerHTML = priorities.length ? priorities.map((row, index) => `
+        <tr>
+          <td class="rank">${index + 1}</td>
+          <td>${html(row.initiative || "No initiative")}</td>
+          <td class="initiative-detail">${html(row.details || "No detail")}</td>
+          <td>${html(row.owner || "No owner")}</td>
+          <td>${html(row.tower)}</td>
+          <td class="money">${(row.le / 1000).toFixed(1)}</td>
+          <td class="money">${(row.act / 1000).toFixed(1)}</td>
+          <td class="gap" style="color:${row.gap < 0 ? "var(--red)" : "var(--green)"}">${(row.gap / 1000).toFixed(1)}</td>
+          <td class="center">${riskTag(row.risk)}</td>
+          <td>${html(row.action || "Define recovery action")}</td>
+        </tr>`).join("") : `<tr><td colspan="10" class="center">No initiatives with LE or AC for the selected month.</td></tr>`;
+    }
+
+    function renderPrioritiesYtd(rows, cutIndex) {
+      const cutMonth = window.OPEX_DATA.months[cutIndex];
+      const ytdMonths = window.OPEX_DATA.months.slice(0, cutIndex + 1);
+      document.getElementById("priority-ytd-title").textContent = "Priority Actions - YTD";
+      document.getElementById("priority-ytd-focus").textContent = `Year to date focus: review all initiatives with movement through ${fullMonthLabels[cutMonth]}`;
+      const priorities = rows
+        .map(row => {
+          const le = sum(ytdMonths.map(month => row.months[month]?.le));
+          const act = sum(ytdMonths.map(month => row.months[month]?.act));
+          return {...row, le, act, gap: act - le};
+        })
+        .filter(row => row.le !== 0 || row.act !== 0)
+        .sort((a, b) => a.gap - b.gap || b.le - a.le);
+      document.getElementById("priority-ytd-body").innerHTML = priorities.length ? priorities.map((row, index) => `
+        <tr>
+          <td class="rank">${index + 1}</td>
+          <td>${html(row.initiative || "No initiative")}</td>
+          <td class="initiative-detail">${html(row.details || "No detail")}</td>
+          <td>${html(row.owner || "No owner")}</td>
+          <td>${html(row.tower)}</td>
+          <td class="money">${(row.le / 1000).toFixed(1)}</td>
+          <td class="money">${(row.act / 1000).toFixed(1)}</td>
+          <td class="gap" style="color:${row.gap < 0 ? "var(--red)" : "var(--green)"}">${(row.gap / 1000).toFixed(1)}</td>
+          <td class="center">${riskTag(row.risk)}</td>
+          <td>${html(row.action || "Define recovery action")}</td>
+        </tr>`).join("") : `<tr><td colspan="10" class="center">No initiatives with LE or AC for the selected period.</td></tr>`;
+    }
+
+    function renderCategoryTable(rows, months, targetId) {
+      const categoryOrder = ["Champions", "Break True", "BAU - Operations", "Out of The BOX"];
+      const canonicalCategory = category => {
+        const normalized = String(category || "").trim().toLowerCase();
+        if (normalized === "brake true" || normalized === "break true") return "Break True";
+        if (normalized === "out of the box" || normalized === "out of the boxx") return "Out of The BOX";
+        return category || "No category";
+      };
+      const grouped = rows.reduce((acc, row) => {
+        const key = canonicalCategory(row.category);
+        if (!acc[key]) {
+          acc[key] = {category: key, completed: 0, progress: 0, notStarted: 0, noStatus: 0, le: 0, act: 0, total: 0};
+        }
+        acc[key].total += 1;
+        if (row.status === "Completed") acc[key].completed += 1;
+        else if (row.status === "In progress") acc[key].progress += 1;
+        else if (row.status === "Not started") acc[key].notStarted += 1;
+        else acc[key].noStatus += 1;
+        acc[key].le += sum(months.map(month => row.months[month]?.le));
+        acc[key].act += sum(months.map(month => row.months[month]?.act));
+        return acc;
+      }, {});
+
+      const statusForCompliance = compliance => {
+        if (compliance >= 1) return {className: "green", label: "Met"};
+        if (compliance >= .5) return {className: "yellow", label: "In progress"};
+        return {className: "red", label: "At risk"};
+      };
+
+      const categoryItems = categoryOrder
+        .map(category => grouped[category] || {category, completed: 0, progress: 0, notStarted: 0, noStatus: 0, le: 0, act: 0, total: 0});
+
+      const rowsHtml = categoryItems
+        .map(item => {
+          const gap = item.act - item.le;
+          const compliance = item.le ? item.act / item.le : 0;
+          const status = statusForCompliance(compliance);
+          return `
+          <tr>
+            <td>${html(item.category)}</td>
+            <td class="money">${shortNumber(item.le)}</td>
+            <td class="money">${shortNumber(item.act)}</td>
+            <td class="money" style="color:${gap < 0 ? "var(--red)" : "var(--green)"}">${gap < 0 ? "-" : ""}${shortNumber(Math.abs(gap))}</td>
+            <td class="num" style="color:#111827">${pct(compliance)}</td>
+            <td><span class="status-light ${status.className}">${status.label}</span></td>
+          </tr>
+        `;
+        }).join("");
+
+      const total = categoryItems.reduce((acc, item) => {
+        acc.le += item.le;
+        acc.act += item.act;
+        return acc;
+      }, {le: 0, act: 0});
+      const totalGap = total.act - total.le;
+      const totalCompliance = total.le ? total.act / total.le : 0;
+      const totalStatus = statusForCompliance(totalCompliance);
+      const totalRow = `
+        <tr>
+          <td><strong>TOTAL</strong></td>
+          <td class="money"><strong>${shortNumber(total.le)}</strong></td>
+          <td class="money"><strong>${shortNumber(total.act)}</strong></td>
+          <td class="money" style="color:${totalGap < 0 ? "var(--red)" : "var(--green)"}"><strong>${totalGap < 0 ? "-" : ""}${shortNumber(Math.abs(totalGap))}</strong></td>
+          <td class="num" style="color:#111827"><strong>${pct(totalCompliance)}</strong></td>
+          <td><span class="status-light ${totalStatus.className}">${totalStatus.label}</span></td>
+        </tr>
+      `;
+
+      document.getElementById(targetId).innerHTML = rowsHtml + totalRow;
+    }
+
+    function renderCategorySummary(rows, cutIndex) {
+      const cutMonth = window.OPEX_DATA.months[cutIndex];
+      document.getElementById("category-cut-title").textContent = fullMonthLabels[cutMonth];
+      renderCategoryTable(rows, window.OPEX_DATA.months.slice(0, cutIndex + 1), "category-summary-body");
+      renderCategoryTable(rows, [cutMonth], "category-cut-month-body");
+    }
+
+    function aggregateByTower(rows, months) {
+      return Object.values(rows.reduce((acc, row) => {
+        const tower = row.tower || "No tower";
+        if (!acc[tower]) acc[tower] = {tower, le: 0, act: 0};
+        months.forEach(month => {
+          acc[tower].le += row.months[month]?.le || 0;
+          acc[tower].act += row.months[month]?.act || 0;
+        });
+        return acc;
+      }, {}))
+        .map(item => ({...item, gap: item.act - item.le, compliance: item.le ? item.act / item.le : 0}));
+    }
+
+    function renderTowerBars(rows, months, targetId) {
+      const towers = aggregateByTower(rows, months)
+        .filter(item => item.compliance > 0)
+        .sort((a, b) => a.compliance - b.compliance)
+        .slice(0, 6);
+      document.getElementById(targetId).innerHTML = towers.map(item => `
+        <div class="tower-row"><span>${html(item.tower)}</span><div class="bar-bg"><div class="bar-fill" style="width:${Math.min(100, Math.round(item.compliance * 100))}%;background:${complianceColor(item.compliance)}"></div></div><b>${pct(item.compliance)}</b></div>
+      `).join("");
+    }
+
+    function renderExecutiveYtd(rows, monthly, cutIndex) {
+      const ytdMonths = window.OPEX_DATA.months.slice(0, cutIndex + 1);
+      const ytd = monthly.slice(0, cutIndex + 1);
+      const le = sum(ytd.map(item => item.le));
+      const act = sum(ytd.map(item => item.act));
+      const gap = act - le;
+      const compliance = le ? act / le : 0;
+      const worstTower = aggregateByTower(rows, ytdMonths).sort((a, b) => a.gap - b.gap)[0]?.tower || "No data";
+      const gapUp = gap >= 0;
+      const gapArrow = `<span class="gap-corner-arrow ${gapUp ? "up" : "down"}" aria-label="${gapUp ? "Actual above LE" : "Actual below LE"}"></span>`;
+      document.getElementById("executive-ytd-grid").innerHTML = `
+        <div class="mini-card gap-card"><span>Gap YTD</span><strong style="color:${gapUp ? "var(--green)" : "var(--red)"}">${money(gap)}</strong>${gapArrow}</div>
+        <div class="mini-card"><span>LE YTD</span><strong>${money(le)}</strong></div>
+        <div class="mini-card"><span>Act YTD</span><strong>${money(act)}</strong></div>
+        <div class="mini-card"><span>% Compliance</span><strong style="color:${complianceColor(compliance)}">${pct(compliance)}</strong></div>
+        <div class="mini-card"><span>Largest Gap Tower</span><strong>${html(worstTower)}</strong></div>`;
+      renderTowerBars(rows, ytdMonths, "ytd-tower-bars");
+    }
+
+    function renderDirectorPerformance(rows, cutIndex) {
+      const ytdMonths = window.OPEX_DATA.months.slice(0, cutIndex + 1);
+      const directors = Object.values(rows.reduce((acc, row) => {
+        const director = row.director || "No director";
+        if (!acc[director]) acc[director] = {director, le: 0, act: 0};
+        ytdMonths.forEach(month => {
+          acc[director].le += row.months[month]?.le || 0;
+          acc[director].act += row.months[month]?.act || 0;
+        });
+        return acc;
+      }, {}))
+        .map(item => ({...item, gap: item.act - item.le, compliance: item.le ? item.act / item.le : 0}))
+        .filter(item => item.le !== 0 || item.act !== 0);
+
+      const statusForCompliance = compliance => {
+        if (compliance >= 1) return {className: "green", label: "Met"};
+        if (compliance >= .5) return {className: "yellow", label: "In progress"};
+        return {className: "red", label: "At risk"};
+      };
+
+      const visible = [...directors].sort((a, b) => a.compliance - b.compliance || a.gap - b.gap);
+      const rowsHtml = visible.map(item => {
+        const status = statusForCompliance(item.compliance);
+        return `
+          <tr>
+            <td class="director-name">${html(item.director)}</td>
+            <td class="money">${shortNumber(item.le)}</td>
+            <td class="money">${shortNumber(item.act)}</td>
+            <td class="money" style="color:${item.gap < 0 ? "var(--red)" : "var(--green)"}">${item.gap < 0 ? "-" : ""}${shortNumber(Math.abs(item.gap))}</td>
+            <td class="num" style="color:#111827">${pct(item.compliance)}</td>
+            <td><span class="status-light ${status.className}">${status.label}</span></td>
+          </tr>
+        `;
+      }).join("");
+      const total = visible.reduce((acc, item) => {
+        acc.le += item.le;
+        acc.act += item.act;
+        return acc;
+      }, {le: 0, act: 0});
+      const totalGap = total.act - total.le;
+      const totalCompliance = total.le ? total.act / total.le : 0;
+      const totalStatus = statusForCompliance(totalCompliance);
+      const totalRow = `
+        <tr>
+          <td class="director-name">TOTAL</td>
+          <td class="money"><strong>${shortNumber(total.le)}</strong></td>
+          <td class="money"><strong>${shortNumber(total.act)}</strong></td>
+          <td class="money" style="color:${totalGap < 0 ? "var(--red)" : "var(--green)"}"><strong>${totalGap < 0 ? "-" : ""}${shortNumber(Math.abs(totalGap))}</strong></td>
+          <td class="num" style="color:#111827"><strong>${pct(totalCompliance)}</strong></td>
+          <td><span class="status-light ${totalStatus.className}">${totalStatus.label}</span></td>
+        </tr>
+      `;
+      document.getElementById("director-performance-body").innerHTML =
+        visible.length ? rowsHtml + totalRow : `<tr><td colspan="6" class="center">No director data for the selected filters.</td></tr>`;
+    }
+
+    function renderExecutive(rows, monthly, cutIndex) {
+      const cutMonth = window.OPEX_DATA.months[cutIndex];
+      const month = monthly[cutIndex] || {le: 0, act: 0, gap: 0, cumpl: 0};
+      document.getElementById("executive-title").textContent = `Executive Summary ${fullMonthLabels[cutMonth]}`;
+      const towerGaps = aggregateByTower(rows, [cutMonth]);
+      const worstTower = towerGaps.sort((a, b) => a.gap - b.gap)[0]?.tower || "No data";
+      const gapUp = month.gap >= 0;
+      const gapArrow = `<span class="gap-corner-arrow ${gapUp ? "up" : "down"}" aria-label="${gapUp ? "Actual above LE" : "Actual below LE"}"></span>`;
+      document.getElementById("executive-grid").innerHTML = `
+        <div class="mini-card gap-card"><span>Gap ${fullMonthLabels[cutMonth]}</span><strong style="color:${gapUp ? "var(--green)" : "var(--red)"}">${money(month.gap)}</strong>${gapArrow}</div>
+        <div class="mini-card"><span>LE ${fullMonthLabels[cutMonth]}</span><strong>${money(month.le)}</strong></div>
+        <div class="mini-card"><span>Act ${fullMonthLabels[cutMonth]}</span><strong>${money(month.act)}</strong></div>
+        <div class="mini-card"><span>% Compliance</span><strong style="color:${complianceColor(month.cumpl)}">${pct(month.cumpl)}</strong></div>
+        <div class="mini-card"><span>Largest Gap Tower</span><strong>${html(worstTower)}</strong></div>`;
+    }
+
+    function renderTowers(rows, cutIndex) {
+      const cutMonth = window.OPEX_DATA.months[cutIndex];
+      renderTowerBars(rows, [cutMonth], "tower-bars");
+    }
+
+    function renderDashboard() {
+      const rows = filteredRows();
+      const cutMonth = document.getElementById("filter-cut").value;
+      const cutIndex = window.OPEX_DATA.months.indexOf(cutMonth);
+      const monthly = monthlyTotals(rows);
+      const ytd = monthly.slice(0, cutIndex + 1);
+      const le = sum(ytd.map(item => item.le));
+      const act = sum(ytd.map(item => item.act));
+      const cumpl = le ? act / le : 0;
+
+      document.getElementById("kpi-h1-le").textContent = money(le);
+      document.getElementById("kpi-h1-act").textContent = money(act);
+      const complianceKpi = document.getElementById("kpi-h1-cumpl");
+      complianceKpi.textContent = pct(cumpl);
+      complianceKpi.style.color = complianceColor(cumpl);
+      document.getElementById("kpi-h1-gap").textContent = money(act - le);
+      document.getElementById("kpi-count").textContent = rows.length.toLocaleString("en-US");
+
+      renderChart(monthly, cutIndex);
+      renderExecutiveYtd(rows, monthly, cutIndex);
+      renderDirectorPerformance(rows, cutIndex);
+      renderCategorySummary(rows, cutIndex);
+      renderPrioritiesYtd(rows, cutIndex);
+      renderPriorities(rows, cutMonth);
+      renderExecutive(rows, monthly, cutIndex);
+      renderTowers(rows, cutIndex);
+    }
+
+    function initDashboard() {
+      const rows = window.OPEX_DATA.rows;
+      document.getElementById("filter-cut").innerHTML = window.OPEX_DATA.months
+        .map(month => `<option value="${month}" ${month === "Jun" ? "selected" : ""}>${monthLabels[month]} 2026</option>`)
+        .join("");
+      fillSelect("filter-package", [...new Set(rows.map(row => row.package))], "All");
+      fillSelect("filter-expense-type", [...new Set(rows.map(row => row.expenseType))], "All");
+      fillSelect("filter-bu", [...new Set(rows.map(row => row.bu))], "All");
+      fillSelect("filter-country", [...new Set(rows.map(row => row.country))], "All");
+      fillSelect("filter-tower", [...new Set(rows.map(row => row.tower))], "All");
+      fillSelect("filter-director", [...new Set(rows.map(row => row.director))], "All");
+      fillSelect("filter-owner", [...new Set(rows.map(row => row.owner))], "All");
+      fillSelect("filter-category", [...new Set(rows.map(row => row.category))], "All");
+      fillSelect("filter-vendor", [...new Set(rows.map(row => row.vendor))], "All");
+      const filterIds = ["filter-cut", "filter-package", "filter-expense-type", "filter-bu", "filter-country", "filter-tower", "filter-director", "filter-owner", "filter-category", "filter-vendor"];
+      filterIds.forEach(id => {
+        document.getElementById(id).addEventListener("change", () => {
+          if (id !== "filter-cut") normalizeMultiSelect(id);
+          renderDashboard();
+        });
+      });
+      document.querySelectorAll(".rail-filter label").forEach(label => {
+        label.addEventListener("click", () => {
+          label.closest(".rail-filter").classList.toggle("open");
+        });
+      });
+      document.getElementById("filter-reset").addEventListener("click", () => {
+        filterIds.filter(id => id !== "filter-cut").forEach(id => {
+          Array.from(document.getElementById(id).options).forEach(option => {
+            option.selected = option.value === "__all";
+          });
+        });
+        renderDashboard();
+      });
+      renderDashboard();
+    }
+
+    initDashboard();
+  </script>
+</body>
+</html>
